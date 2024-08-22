@@ -1,5 +1,6 @@
 package com.sebas.shoppingcart.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,6 +14,7 @@ public class User {
 	private String email;
 	private String lastName;
 	private String firstName;
+	@Column(name="area_of_interest", nullable=false)
 	private String areaOfInteres;
 	
 	public int getId() {
