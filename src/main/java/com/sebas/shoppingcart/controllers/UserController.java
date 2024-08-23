@@ -18,7 +18,7 @@ import com.sebas.shoppingcart.model.User;
 import com.sebas.shoppingcart.repos.UserRepository;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/users")
 @CrossOrigin
 public class UserController {
 	
@@ -29,12 +29,12 @@ public class UserController {
 		this.repository = repository;
 	}
 	
-	@RequestMapping(value="/users",method=RequestMethod.GET)
+	@RequestMapping(value="/all",method=RequestMethod.GET)
 	public List<User> getUsers(){
 		return repository.findAll();
 	}
 	
-	@RequestMapping(value="/useremail",method=RequestMethod.GET)
+	@RequestMapping(value="/email",method=RequestMethod.GET)
 	public ResponseEntity<?> getUserByName(@RequestParam(value="email") String email) {
 		Optional<User> userWithEmail = repository.findByEmail(email);
 		if(userWithEmail.isPresent()) {
@@ -43,7 +43,7 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found with that email");
 	}
 	
-	@RequestMapping(value="/username",method=RequestMethod.GET)
+	@RequestMapping(value="/name",method=RequestMethod.GET)
 	public ResponseEntity<?> getUserByInfo(@RequestParam(value="lastName",required=false) String lastName,
 											@RequestParam(value="firstName",required=false) String firstName) {
 		List<User> listFirst = repository.findByFirstName(firstName);
@@ -62,7 +62,7 @@ public class UserController {
 	}
 	
 	
-	@RequestMapping(value="/saveUser",method=RequestMethod.POST)
+	@RequestMapping(value="/save",method=RequestMethod.POST)
 	public ResponseEntity<?> saveUser(@RequestBody User user) {
 		List<User> savedUsers = repository.findAll();
 		for(User u:savedUsers) {
@@ -73,21 +73,25 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(user));
 	}
 	
-	@RequestMapping(value="/updateUser",method=RequestMethod.PUT)
+	@RequestMapping(value="/update",method=RequestMethod.PUT)
 	public ResponseEntity<?> updateUser(@RequestBody User user) {
-		User oldUser = repository.findById(user.getId()).get();
-		List<User> savedUsers = repository.findAll();
-		for(User u:savedUsers) {
-			if(user.getEmail().contains(u.getEmail())) {
-				return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already in use");
+		Optional<User> oldUser = repository.findById(user.getId());
+		if(oldUser.isPresent()) {
+			User newUser = oldUser.get();
+			List<User> savedUsers = repository.findAll();
+			for(User u:savedUsers) {
+				if(user.getEmail().contains(u.getEmail())) {
+					return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already in use");
+				}
 			}
+			newUser.setEmail(user.getEmail());
+			newUser.setAreaOfInteres(user.getAreaOfInteres());
+			return ResponseEntity.status(HttpStatus.OK).body(repository.save(newUser));
 		}
-		oldUser.setEmail(user.getEmail());
-		oldUser.setAreaOfInteres(user.getAreaOfInteres());
-		return ResponseEntity.status(HttpStatus.OK).body(repository.save(oldUser));
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found");
 	}
 	
-	@RequestMapping(value="/deleteUser/{id}",method=RequestMethod.DELETE)
+	@RequestMapping(value="/delete/{id}",method=RequestMethod.DELETE)
 	public ResponseEntity<?> deleteUser(@PathVariable("id") int id){
 		Optional<User> optUser = repository.findById(id);
 		if(!optUser.isPresent()) {
