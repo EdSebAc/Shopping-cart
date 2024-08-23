@@ -40,7 +40,7 @@ public class UserController {
 		if(userWithEmail.isPresent()) {
 			return ResponseEntity.status(HttpStatus.FOUND).body(userWithEmail);
 		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found with that info");
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found with that email");
 	}
 	
 	@RequestMapping(value="/username",method=RequestMethod.GET)
@@ -58,7 +58,7 @@ public class UserController {
 		else if((!listFirst.isEmpty() && listLast.isEmpty()) || (listFirst.isEmpty() && !listLast.isEmpty())) {
 			return listFirst.isEmpty() ? (ResponseEntity.status(HttpStatus.FOUND).body(listLast)) : ResponseEntity.status(HttpStatus.FOUND).body(listFirst);
 		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found with that info");
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found with that name");
 	}
 	
 	
