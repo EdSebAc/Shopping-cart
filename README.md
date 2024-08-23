@@ -17,3 +17,15 @@ Delete entire resource with path variable of the user id
 
 ## Products
 To test product endpoints, use /products to access the product controller
+### /all
+Get all products, no body or params
+### /name
+Get users with request parameters productName
+### /price
+Get users with request parameter price (double)
+### /save
+Create new product with request body of a JSON with productName, totalProductsInventory, price, image, productDescription, productStatus
+### /update
+Update user based on id with request body of a JSON with id, productName, totalProductsInventory, price, image, productDescription, productStatus
+### /delete/{id}
+Update the product's state to false, doesn't delete resource
