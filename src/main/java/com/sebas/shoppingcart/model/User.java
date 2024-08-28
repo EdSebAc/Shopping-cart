@@ -5,17 +5,22 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Size;
 
 @Entity
 public class User {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
+	@Size(min=2, message="Email should have at least 2 characters")
 	private String email;
+	@Size(min=2, message="Last name should have at least 2 characters")
 	private String lastName;
+	@Size(min=2, message="First name should have at least 2 characters")
 	private String firstName;
-	@Column(name="area_of_interest", nullable=false)
-	private String areaOfInteres;
+	@Column(name="area_of_interest")
+	@Size(min=2, message="Area of interest should have at least 2 characters")
+	private String areaOfInterest;
 	
 	public int getId() {
 		return id;
@@ -41,10 +46,10 @@ public class User {
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
-	public String getAreaOfInteres() {
-		return areaOfInteres;
+	public String getAreaOfInterest() {
+		return areaOfInterest;
 	}
-	public void setAreaOfInteres(String areaOfInteres) {
-		this.areaOfInteres = areaOfInteres;
+	public void setAreaOfInterest(String areaOfInteres) {
+		this.areaOfInterest = areaOfInteres;
 	}
 }

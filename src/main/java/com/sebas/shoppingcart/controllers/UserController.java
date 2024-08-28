@@ -1,5 +1,6 @@
 package com.sebas.shoppingcart.controllers;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,18 +8,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.sebas.shoppingcart.model.UpdateUser;
 import com.sebas.shoppingcart.model.User;
 import com.sebas.shoppingcart.repos.UserRepository;
 
+import jakarta.validation.Valid;
+
 @RestController
-@RequestMapping("/users")
 @CrossOrigin
 public class UserController {
 	
@@ -29,21 +36,30 @@ public class UserController {
 		this.repository = repository;
 	}
 	
-	@RequestMapping(value="/all",method=RequestMethod.GET)
+	@GetMapping("/users")
 	public List<User> getUsers(){
 		return repository.findAll();
 	}
 	
-	@RequestMapping(value="/email",method=RequestMethod.GET)
-	public ResponseEntity<?> getUserByName(@RequestParam(value="email") String email) {
-		Optional<User> userWithEmail = repository.findByEmail(email);
-		if(userWithEmail.isPresent()) {
-			return ResponseEntity.status(HttpStatus.FOUND).body(userWithEmail);
+	@GetMapping("/users/{id}")
+	public User getUserById(@PathVariable int id){
+		Optional<User> user = repository.findById(id);
+		if(user.isEmpty()) {
+			throw new UserNotFoundException("id:"+id);
 		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found with that email");
+		return user.get();
 	}
 	
-	@RequestMapping(value="/name",method=RequestMethod.GET)
+	@GetMapping("/users/email")
+	public User getUserByName(@RequestParam(value="email") String email) {
+		Optional<User> userWithEmail = repository.findByEmail(email);
+		if(userWithEmail.isEmpty()) {
+			throw new UserNotFoundException("Email: '"+email+"' not found");
+		}
+		return userWithEmail.get();
+	}
+	
+	@GetMapping("/users/name")
 	public ResponseEntity<?> getUserByInfo(@RequestParam(value="lastName",required=false) String lastName,
 											@RequestParam(value="firstName",required=false) String firstName) {
 		List<User> listFirst = repository.findByFirstName(firstName);
@@ -61,41 +77,44 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found with that name");
 	}
 	
-	
-	@RequestMapping(value="/save",method=RequestMethod.POST)
-	public ResponseEntity<?> saveUser(@RequestBody User user) {
+	@PostMapping("/users")
+	public ResponseEntity<?> saveUser(@Valid @RequestBody User user) {
 		List<User> savedUsers = repository.findAll();
 		for(User u:savedUsers) {
 			if(user.getEmail().contains(u.getEmail())) {
-				return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already in use");
+				throw new EmailAlreadyInUseException(user.getEmail());
 			}
 		}
-		return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(user));
+		User savedUser = repository.save(user);
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUser.getId()).toUri();
+		return ResponseEntity.created(location).build();
 	}
 	
-	@RequestMapping(value="/update",method=RequestMethod.PUT)
-	public ResponseEntity<?> updateUser(@RequestBody User user) {
+	@PutMapping("/users")
+	public ResponseEntity<?> updateUser(@Valid @RequestBody UpdateUser user) {
 		Optional<User> oldUser = repository.findById(user.getId());
-		if(oldUser.isPresent()) {
-			User newUser = oldUser.get();
-			List<User> savedUsers = repository.findAll();
-			for(User u:savedUsers) {
-				if(user.getEmail().contains(u.getEmail())) {
-					return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already in use");
-				}
-			}
-			newUser.setEmail(user.getEmail());
-			newUser.setAreaOfInteres(user.getAreaOfInteres());
-			return ResponseEntity.status(HttpStatus.OK).body(repository.save(newUser));
+		if(oldUser.isEmpty()) {
+			throw new UserNotFoundException("Id: "+user.getId() + " not found");
 		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found");
+		User newUser = oldUser.get();
+		List<User> savedUsers = repository.findAll();
+		for(User u:savedUsers) {
+			if(user.getEmail().contains(u.getEmail())) {
+				throw new EmailAlreadyInUseException(user.getEmail());
+			}
+		}
+		newUser.setEmail(user.getEmail());
+		newUser.setAreaOfInterest(user.getAreaOfInterest());
+		User savedUser = repository.save(newUser);
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUser.getId()).toUri();
+		return ResponseEntity.created(location).build();
 	}
 	
-	@RequestMapping(value="/delete/{id}",method=RequestMethod.DELETE)
+	@DeleteMapping("/users/{id}")
 	public ResponseEntity<?> deleteUser(@PathVariable("id") int id){
 		Optional<User> optUser = repository.findById(id);
-		if(!optUser.isPresent()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+		if(!optUser.isEmpty()) {
+			throw new UserNotFoundException("Id:"+id);
 		}
 		repository.deleteById(id);
 		return ResponseEntity.status(HttpStatus.OK).body("User deleted");
