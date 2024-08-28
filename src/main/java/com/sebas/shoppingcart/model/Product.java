@@ -5,7 +5,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -16,14 +18,16 @@ public class Product {
 	@Size(min=2, message="Name should have at least 2 characters")
 	private String productName;
 	@Column(name="total_products_inventory", nullable=false)
-	@Size(min=1,message="No products in inventory specified")
+	@NotNull(message="Number of products should specified")
+	@Min(value=0,message="There can't be less than 0 products")
 	private int totalProductsInventory;
-	@Size(min=1,message="No price of product specified")
-	private double price;
+	@NotNull(message="No price of product specified")
+	@DecimalMin(value="0.01",message="Price should not be 0")
+	private Double price;
 	private String image;
 	private String productDescription;
-	@Size(min=1,message="No product status specified")
-	private boolean productStatus;
+	@NotNull(message="No product status specified")
+	private Boolean productStatus;
 	
 	public int getId() {
 		return id;
@@ -43,10 +47,10 @@ public class Product {
 	public void setTotalProductsInventory(int totalProductsInventory) {
 		this.totalProductsInventory = totalProductsInventory;
 	}
-	public double getPrice() {
+	public Double getPrice() {
 		return price;
 	}
-	public void setPrice(double price) {
+	public void setPrice(Double price) {
 		this.price = price;
 	}
 	public String getImage() {
@@ -61,10 +65,10 @@ public class Product {
 	public void setProductDescription(String productDescription) {
 		this.productDescription = productDescription;
 	}
-	public boolean isProductStatus() {
+	public Boolean isProductStatus() {
 		return productStatus;
 	}
-	public void setProductStatus(boolean productStatus) {
+	public void setProductStatus(Boolean productStatus) {
 		this.productStatus = productStatus;
 	}
 }

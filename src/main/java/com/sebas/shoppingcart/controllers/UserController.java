@@ -54,7 +54,7 @@ public class UserController {
 	public User getUserByName(@RequestParam(value="email") String email) {
 		Optional<User> userWithEmail = repository.findByEmail(email);
 		if(userWithEmail.isEmpty()) {
-			throw new UserNotFoundException("Email: '"+email+"' not found");
+			throw new UserNotFoundException("email: "+email);
 		}
 		return userWithEmail.get();
 	}
@@ -74,7 +74,7 @@ public class UserController {
 		else if((!listFirst.isEmpty() && listLast.isEmpty()) || (listFirst.isEmpty() && !listLast.isEmpty())) {
 			return listFirst.isEmpty() ? (ResponseEntity.status(HttpStatus.FOUND).body(listLast)) : ResponseEntity.status(HttpStatus.FOUND).body(listFirst);
 		}
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found with that name");
+		throw new UserNotFoundException("first name: " + firstName + " & last name: " + lastName);
 	}
 	
 	@PostMapping("/users")
