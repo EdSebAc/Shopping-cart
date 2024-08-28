@@ -1,10 +1,15 @@
 package com.sebas.shoppingcart.model;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -21,6 +26,9 @@ public class User {
 	@Column(name="area_of_interest")
 	@Size(min=2, message="Area of interest should have at least 2 characters")
 	private String areaOfInterest;
+	@OneToMany(mappedBy="user")
+	@JsonIgnore
+	private List<Wishlist> wishlist;
 	
 	public int getId() {
 		return id;
@@ -51,5 +59,11 @@ public class User {
 	}
 	public void setAreaOfInterest(String areaOfInteres) {
 		this.areaOfInterest = areaOfInteres;
+	}
+	public List<Wishlist> getWishlist() {
+		return wishlist;
+	}
+	public void setWishlist(List<Wishlist> wishlist) {
+		this.wishlist = wishlist;
 	}
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import com.sebas.shoppingcart.controllers.UserNotFoundException;
+import com.sebas.shoppingcart.controllers.WishlistNotFoundException;
 import com.sebas.shoppingcart.controllers.ProductNotFoundException;
 import com.sebas.shoppingcart.controllers.EmailAlreadyInUseException;
 
@@ -38,6 +39,12 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 	
 	@ExceptionHandler(ProductNotFoundException.class)
 	public final ResponseEntity<ErrorDetails> habldeProductNotFoundException(Exception ex, WebRequest request) throws Exception{
+		ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(),ex.getMessage(),request.getDescription(false));
+		return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(WishlistNotFoundException.class)
+	public final ResponseEntity<ErrorDetails> habldeWishlistNotFoundException(Exception ex, WebRequest request) throws Exception{
 		ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(),ex.getMessage(),request.getDescription(false));
 		return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.NOT_FOUND);
 	}

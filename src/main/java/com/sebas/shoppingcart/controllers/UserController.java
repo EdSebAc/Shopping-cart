@@ -3,6 +3,7 @@ package com.sebas.shoppingcart.controllers;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,9 +20,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.sebas.shoppingcart.model.Product;
 import com.sebas.shoppingcart.model.UpdateUser;
 import com.sebas.shoppingcart.model.User;
+import com.sebas.shoppingcart.model.Wishlist;
+import com.sebas.shoppingcart.repos.ProductRepository;
 import com.sebas.shoppingcart.repos.UserRepository;
+import com.sebas.shoppingcart.repos.WishlistRepository;
 
 import jakarta.validation.Valid;
 
@@ -30,10 +35,14 @@ import jakarta.validation.Valid;
 public class UserController {
 	
 	private UserRepository repository;
+	private WishlistRepository wishlistRepository;
+	private ProductRepository productRepository;
 	
 	@Autowired
-	UserController(UserRepository repository){
+	UserController(UserRepository repository, WishlistRepository wishlistRepository,ProductRepository productRepository){
 		this.repository = repository;
+		this.wishlistRepository = wishlistRepository;
+		this.productRepository = productRepository;
 	}
 	
 	@GetMapping("/users")
@@ -113,10 +122,61 @@ public class UserController {
 	@DeleteMapping("/users/{id}")
 	public ResponseEntity<?> deleteUser(@PathVariable("id") int id){
 		Optional<User> optUser = repository.findById(id);
-		if(!optUser.isEmpty()) {
+		if(optUser.isEmpty()) {
 			throw new UserNotFoundException("Id:"+id);
 		}
 		repository.deleteById(id);
 		return ResponseEntity.status(HttpStatus.OK).body("User deleted");
+	}
+	
+	@GetMapping("/users/{id}/wishlists")
+	public List<Wishlist> retreiveWishlistForUser(@PathVariable int id){
+		Optional<User> user = repository.findById(id);
+		if(user.isEmpty()) {
+			throw new UserNotFoundException("Id:"+id);
+		}
+		return user.get().getWishlist();
+	}
+	
+	@PostMapping("/users/{id}/wishlists")
+	public ResponseEntity<Object> createWishlistForUser(@PathVariable int id, @RequestBody Wishlist wishlist){
+		Optional<User> user = repository.findById(id);
+		if(user.isEmpty()) {
+			throw new UserNotFoundException("Id:"+id);
+		}
+		wishlist.setUser(user.get());
+		Wishlist savedWish = wishlistRepository.save(wishlist);
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedWish.getId()).toUri();
+		return ResponseEntity.created(location).build();
+	}
+	
+	@PutMapping("users/{id}/wishlists/{wid}")
+	public ResponseEntity<Object> addProductToWishlist(@PathVariable int wid,@RequestParam int pid){
+		Optional<Product> product = productRepository.findById(pid);
+		if(product.isEmpty())
+			throw new ProductNotFoundException("Id: " + pid);
+		Optional<Wishlist> wishlist = wishlistRepository.findById(wid);
+		if(wishlist.isEmpty())
+			throw new WishlistNotFoundException("Id:"+wid);
+		Wishlist foundWish = wishlist.get();
+		foundWish.getProducts().add(product.get());
+		Wishlist savedWish = wishlistRepository.save(foundWish);
+		return ResponseEntity.status(HttpStatus.OK).body(savedWish);
+	}
+	
+	@DeleteMapping("users/{id}/wishlists/{wid}")
+	public ResponseEntity<Object> deleteProductFromWishlist(@PathVariable int wid,@RequestParam int pid){
+		Optional<Product> product = productRepository.findById(pid);
+		if(product.isEmpty())
+			throw new ProductNotFoundException("Id: " + pid);
+		Optional<Wishlist> wishlist = wishlistRepository.findById(wid);
+		if(wishlist.isEmpty())
+			throw new WishlistNotFoundException("Id:"+wid);
+		Wishlist foundWish = wishlist.get();
+		foundWish.setProducts(foundWish.getProducts().stream()
+		.filter(p -> p.getId() != pid)
+		.collect(Collectors.toList()));
+		Wishlist savedWish = wishlistRepository.save(foundWish);
+		return ResponseEntity.status(HttpStatus.OK).body(savedWish);
 	}
 }
