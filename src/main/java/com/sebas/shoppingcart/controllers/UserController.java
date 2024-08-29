@@ -1,6 +1,7 @@
 package com.sebas.shoppingcart.controllers;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,10 +21,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.sebas.shoppingcart.model.OrderHistory;
 import com.sebas.shoppingcart.model.Product;
 import com.sebas.shoppingcart.model.UpdateUser;
 import com.sebas.shoppingcart.model.User;
 import com.sebas.shoppingcart.model.Wishlist;
+import com.sebas.shoppingcart.repos.OrderHistoryRepository;
 import com.sebas.shoppingcart.repos.ProductRepository;
 import com.sebas.shoppingcart.repos.UserRepository;
 import com.sebas.shoppingcart.repos.WishlistRepository;
@@ -37,12 +40,14 @@ public class UserController {
 	private UserRepository repository;
 	private WishlistRepository wishlistRepository;
 	private ProductRepository productRepository;
+	private OrderHistoryRepository orderHistoryRepository;
 	
 	@Autowired
-	UserController(UserRepository repository, WishlistRepository wishlistRepository,ProductRepository productRepository){
+	UserController(UserRepository repository, WishlistRepository wishlistRepository,ProductRepository productRepository,OrderHistoryRepository orderHistoryRepository){
 		this.repository = repository;
 		this.wishlistRepository = wishlistRepository;
 		this.productRepository = productRepository;
+		this.orderHistoryRepository = orderHistoryRepository;
 	}
 	
 	@GetMapping("/users")
@@ -190,5 +195,39 @@ public class UserController {
 			throw new WishlistNotFoundException("Id:"+wid);
 		wishlistRepository.deleteById(wid);
 		return ResponseEntity.status(HttpStatus.OK).body("Wishlist deleted");
+	}
+	
+	@PostMapping("users/{id}/buy")
+	public ResponseEntity<Object> buyProducts(@PathVariable int id,@RequestBody List<Integer> products){
+		Optional<User> user = repository.findById(id);
+		OrderHistory orderHistory = new OrderHistory();
+		orderHistory.setUser(user.get());
+		if(user.isEmpty())
+			throw new UserNotFoundException("Id: "+id);
+		for(int p:products) {
+			Optional<Product> foundProduct = productRepository.findById(p);
+			if(foundProduct.isEmpty())
+				throw new ProductNotFoundException("Id:"+p);
+			if(foundProduct.get().getTotalProductsInventory()<1) {
+				List<String> boughtProducts = new ArrayList<>();
+				for(Product a:orderHistory.getProducts()) {
+					boughtProducts.add(a.getProductName());
+				}
+				throw new NoMoreProductException(foundProduct.get().getProductName(), boughtProducts);
+			}
+			foundProduct.get().setTotalProductsInventory(foundProduct.get().getTotalProductsInventory()-1);
+			productRepository.save(foundProduct.get());
+			orderHistory.getProducts().add(foundProduct.get());
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(orderHistoryRepository.save(orderHistory));
+	}
+	
+	@GetMapping("/users/{id}/orders")
+	public List<OrderHistory> retreiveOrdersForUser(@PathVariable int id){
+		Optional<User> user = repository.findById(id);
+		if(user.isEmpty()) {
+			throw new UserNotFoundException("Id:"+id);
+		}
+		return user.get().getOrderHistory();
 	}
 }

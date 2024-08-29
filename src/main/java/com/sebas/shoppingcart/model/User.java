@@ -29,6 +29,9 @@ public class User {
 	@OneToMany(mappedBy="user")
 	@JsonIgnore
 	private List<Wishlist> wishlist;
+	@OneToMany(mappedBy="user")
+	@JsonIgnore
+	private List<OrderHistory> orderHistory;
 	
 	public int getId() {
 		return id;
@@ -65,5 +68,11 @@ public class User {
 	}
 	public void setWishlist(List<Wishlist> wishlist) {
 		this.wishlist = wishlist;
+	}
+	public List<OrderHistory> getOrderHistory() {
+		return orderHistory;
+	}
+	public void setOrderHistory(List<OrderHistory> orderHistory) {
+		this.orderHistory = orderHistory;
 	}
 }

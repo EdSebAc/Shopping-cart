@@ -15,6 +15,7 @@ import com.sebas.shoppingcart.controllers.UserNotFoundException;
 import com.sebas.shoppingcart.controllers.WishlistNotFoundException;
 import com.sebas.shoppingcart.controllers.ProductNotFoundException;
 import com.sebas.shoppingcart.controllers.EmailAlreadyInUseException;
+import com.sebas.shoppingcart.controllers.NoMoreProductException;
 
 @ControllerAdvice
 public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExceptionHandler{
@@ -38,15 +39,21 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 	}
 	
 	@ExceptionHandler(ProductNotFoundException.class)
-	public final ResponseEntity<ErrorDetails> habldeProductNotFoundException(Exception ex, WebRequest request) throws Exception{
+	public final ResponseEntity<ErrorDetails> hanldeProductNotFoundException(Exception ex, WebRequest request) throws Exception{
 		ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(),ex.getMessage(),request.getDescription(false));
 		return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(WishlistNotFoundException.class)
-	public final ResponseEntity<ErrorDetails> habldeWishlistNotFoundException(Exception ex, WebRequest request) throws Exception{
+	public final ResponseEntity<ErrorDetails> hanldeWishlistNotFoundException(Exception ex, WebRequest request) throws Exception{
 		ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(),ex.getMessage(),request.getDescription(false));
 		return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(NoMoreProductException.class)
+	public final ResponseEntity<ErrorDetails> hanldeNoMoreProductException(Exception ex, WebRequest request) throws Exception{
+		ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(),ex.getMessage(),request.getDescription(false));
+		return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.CONFLICT);
 	}
 	
 	@Override
