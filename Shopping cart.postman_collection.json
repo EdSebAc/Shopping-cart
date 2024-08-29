@@ -11,103 +11,259 @@
 			"name": "Users",
 			"item": [
 				{
+					"name": "Wishlist",
+					"item": [
+						{
+							"name": "Get All wishlists",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "localhost:8080/shoppingcart/users/5/wishlists",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"shoppingcart",
+										"users",
+										"5",
+										"wishlists"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Save Product to Wishlist",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "pid",
+											"value": "1",
+											"description": "Product id",
+											"type": "text"
+										},
+										{
+											"key": "pid",
+											"value": "100",
+											"description": "False product id",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "localhost:8080/shoppingcart/users/5/wishlists/1",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"shoppingcart",
+										"users",
+										"5",
+										"wishlists",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Wishlist",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"AAAAAAAAAAAAAAA\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/shoppingcart/users/5/wishlists",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"shoppingcart",
+										"users",
+										"5",
+										"wishlists"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete product from wishlist",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "pid",
+											"value": "1",
+											"description": "Product id",
+											"type": "text"
+										},
+										{
+											"key": "pid",
+											"value": "100",
+											"description": "False product id",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "localhost:8080/shoppingcart/users/5/wishlists/1",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"shoppingcart",
+										"users",
+										"5",
+										"wishlists",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete wishlist",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "wid",
+											"value": "1",
+											"description": "wishlist id",
+											"type": "text"
+										},
+										{
+											"key": "wid",
+											"value": "100",
+											"description": "False wishlist id",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "localhost:8080/shoppingcart/users/5/wishlists",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"shoppingcart",
+										"users",
+										"5",
+										"wishlists"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "#### Get All wishlists\n\nPath parameter for user ID is sent, returns all wishlists from said user\n\n#### Save Product to Wishlist\n\nPath parameter for user ID and wishlist ID, and request param for product ID is sent\n\n#### Create Wishlist\n\nPath parameter for user ID is sent\n\n#### Delete Product from Wishlist\n\nPath parameter for user ID and wishlist ID, and request param for product ID is sent\n\n#### Delete Wishlist\n\nPath parameter for user ID, and request param for wishlist ID is sent"
+				},
+				{
+					"name": "Orders",
+					"item": [
+						{
+							"name": "Buy products",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[1,2,3,4,5]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/shoppingcart/users/5/buy",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"shoppingcart",
+										"users",
+										"5",
+										"buy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Orders",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/shoppingcart/users/5/orders",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"shoppingcart",
+										"users",
+										"5",
+										"orders"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Here are the endpoints to work with OrderHistory table\n\n#### Buy products\n\nList with the product IDs to be bought is sent, returns the Order history object created\n\n#### Get products\n\nIn the path variable, the user ID is sent"
+				},
+				{
 					"name": "Get Users",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/shoppingcart/users/all",
+							"raw": "localhost:8080/shoppingcart/users",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"shoppingcart",
-								"users",
-								"all"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Insert User",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"ima@newperson.com\",\r\n    \"lastName\": \"Paerson\",\r\n    \"firstName\": \"New\",\r\n    \"areaOfInteres\": \"Space\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8080/shoppingcart/users/save",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"shoppingcart",
-								"users",
-								"save"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update User",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"id\": 8,\r\n    \"email\": \"back2@sameold.com\",\r\n    \"lastName\": \"Testing\",\r\n    \"firstName\": \"Names\",\r\n    \"areaOfInteres\": \"Finance\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8080/shoppingcart/users/update",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"shoppingcart",
-								"users",
-								"update"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete User",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": []
-						},
-						"url": {
-							"raw": "localhost:8080/shoppingcart/users/delete/8",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"shoppingcart",
-								"users",
-								"delete",
-								"8"
+								"users"
 							]
 						}
 					},
@@ -128,18 +284,25 @@
 									"key": "email",
 									"value": "jennd@mail.com",
 									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "thisemail@doesntexist.con",
+									"type": "text",
+									"disabled": true
 								}
 							]
 						},
 						"url": {
-							"raw": "localhost:8080/shoppingcart/useremail",
+							"raw": "localhost:8080/shoppingcart/users/email",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"shoppingcart",
-								"useremail"
+								"users",
+								"email"
 							]
 						}
 					},
@@ -165,25 +328,112 @@
 									"key": "firstName",
 									"value": "Jennifer",
 									"type": "text"
+								},
+								{
+									"key": "firstName",
+									"value": "NotReal",
+									"type": "text",
+									"disabled": true
 								}
 							]
 						},
 						"url": {
-							"raw": "localhost:8080/shoppingcart/username",
+							"raw": "localhost:8080/shoppingcart/users/name",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"shoppingcart",
-								"username"
+								"users",
+								"name"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Insert User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"new@user.com\",\r\n    \"lastName\": \"User\",\r\n    \"firstName\": \"New\",\r\n    \"areaOfInterest\": \"New area\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/shoppingcart/users",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"shoppingcart",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 5,\r\n    \"email\":\"newer@mail.com\",\r\n    \"areaOfInterest\":\"Yes\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/shoppingcart/users",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"shoppingcart",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "localhost:8080/shoppingcart/users/6",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"shoppingcart",
+								"users",
+								"6"
 							]
 						}
 					},
 					"response": []
 				}
 			],
-			"description": "Queries for User data. Below is detailed how and why the information is sent the way it is in each request\n\n#### Get Users\n\nNo information sent, retreives all users\n\n#### Insert User\n\nJSON with 4 parameters in raw format is sent to create a User object in the API, not including ID\n\n#### Get User By Mail\n\nMail is sent as a request parameter in string form, using form-data format\n\n#### Get User By Name\n\nFirst and last name are sent as request parameters in string form, they are not requiered. If only one parameter is sent, the response is a list of all users with the same name; if both parameters are sent, the response is a list of the users that are in both the lists (that is, the parameters matched both first and last names)\n\n#### Update User\n\nJSON with 5 parameters in raw format is sent to find an already-created user and update it, although only email and area of interest can be changed, and only emails that are not already registered.\n\n#### Delete User\n\nID is sent in the URL, deletes the entire resource"
+			"description": "Queries for User data. Below is detailed how and why the information is sent the way it is in each request\n\n#### Get Users\n\nNo information sent, retreives all users\n\n#### Insert User\n\nJSON with 4 parameters in raw format is sent to create a User object in the API, not including ID\n\n#### Get User By Mail\n\nMail is sent as a request parameter in string form, using form-data format\n\n#### Get User By Name\n\nFirst and last name are sent as request parameters in string form, they are not requiered. If only one parameter is sent, the response is a list of all users with the same name; if both parameters are sent, the response is a list of the users that are in both the lists (that is, the parameters matched both first and last names)\n\n#### Update User\n\nJSON with 5 parameters in raw format is sent to find an already-created user and update it, although only email and area of interest can be changed, and only emails that are not already registered.\n\n#### Delete User\n\nID is sent in the URL, deletes the entire resource\n\n### To see the endpoints regarding wishlists and order history, click on the folders"
 		},
 		{
 			"name": "Products",
@@ -194,15 +444,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/shoppingcart/products/all",
+							"raw": "localhost:8080/shoppingcart/products",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"shoppingcart",
-								"products",
-								"all"
+								"products"
 							]
 						}
 					},
@@ -223,6 +472,13 @@
 									"key": "productName",
 									"value": "Corn Flakes",
 									"type": "text"
+								},
+								{
+									"key": "productName",
+									"value": "New thing",
+									"description": "False product",
+									"type": "text",
+									"disabled": true
 								}
 							]
 						},
@@ -256,6 +512,13 @@
 									"key": "price",
 									"value": "1.19",
 									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "999.90",
+									"description": "false price",
+									"type": "text",
+									"disabled": true
 								}
 							]
 						},
@@ -281,7 +544,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"productName\": \"Cool stuff\",\r\n    \"totalProductsInventory\": 45,\r\n    \"price\": 6.29,\r\n    \"image\": \"\",\r\n    \"productDescription\": \"Woooow\",\r\n    \"productStatus\": true\r\n}",
+							"raw": "{\r\n    \"productName\": \"New\",\r\n    \"totalProductsInventory\": 5,\r\n    \"price\": 4.50,\r\n    \"image\": \"\",\r\n    \"productDescription\": \"\",\r\n    \"productStatus\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -289,15 +552,14 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/shoppingcart/products/save",
+							"raw": "localhost:8080/shoppingcart/products",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"shoppingcart",
-								"products",
-								"save"
+								"products"
 							]
 						}
 					},
@@ -310,7 +572,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": 8,\r\n    \"productName\": \"Ice cream\",\r\n    \"totalProductsInventory\": 100,\r\n    \"price\": 19.99,\r\n    \"image\": \"https://tse3.mm.bing.net/th/id/OIP.o9ME7l9YErVdnHkHrvO9bgHaHa?rs=1&pid=ImgDetMain\",\r\n    \"productDescription\": \"Updating to see if I can\",\r\n    \"productStatus\": true\r\n}",
+							"raw": "{\r\n    \"id\": 6,\r\n    \"totalProductsInventory\": 100,\r\n    \"price\": 4.59,\r\n    \"image\": \"https://guernseydonkey.com/wp-content/uploads/2018/12/Thumbs_Up_Skin-Color.png\",\r\n    \"productDescription\": \"New description\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -318,15 +580,14 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/shoppingcart/products/update",
+							"raw": "localhost:8080/shoppingcart/products",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"shoppingcart",
-								"products",
-								"update"
+								"products"
 							]
 						}
 					},
@@ -335,10 +596,10 @@
 				{
 					"name": "Delete Product",
 					"request": {
-						"method": "PUT",
+						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/shoppingcart/products/delete/8",
+							"raw": "localhost:8080/shoppingcart/products/6",
 							"host": [
 								"localhost"
 							],
@@ -346,8 +607,7 @@
 							"path": [
 								"shoppingcart",
 								"products",
-								"delete",
-								"8"
+								"6"
 							]
 						}
 					},
