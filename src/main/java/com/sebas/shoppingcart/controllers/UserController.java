@@ -179,4 +179,16 @@ public class UserController {
 		Wishlist savedWish = wishlistRepository.save(foundWish);
 		return ResponseEntity.status(HttpStatus.OK).body(savedWish);
 	}
+	
+	@DeleteMapping("users/{id}/wishlists")
+	public ResponseEntity<Object> deleteEntireWishlist(@PathVariable int id, @RequestParam int wid){
+		Optional<User> user = repository.findById(id);
+		if(user.isEmpty())
+			throw new UserNotFoundException("Id: "+id);
+		Optional<Wishlist> wishlist = wishlistRepository.findById(wid);
+		if(wishlist.isEmpty())
+			throw new WishlistNotFoundException("Id:"+wid);
+		wishlistRepository.deleteById(wid);
+		return ResponseEntity.status(HttpStatus.OK).body("Wishlist deleted");
+	}
 }
