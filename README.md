@@ -1,31 +1,29 @@
 # Shopping cart
+### Tables and initial data are automatically created and inserted when starting the app, but creation of the shoppingcart database is still needed
+To interact with endpoints, see the required params, bodies and responses, run the application and go to: localhost:8080/shoppingcart/swagger-ui.html or you can check out the postman collection
+
+There are 2 main controllers: users and products. Within users you can interact with wishlists and orders.
+
 ## Users
-To test user endpoints, use /users to access the user controller
-### /all
-Get all users, no body or params
-### /name
-Get users with request parameters firstName & lastName
-### /email
-Get users with request parameter email
-### /save
-Create new user with request body of a JSON with email, lastName, firstName, areaOfInterest
-### /update
-Update user based on id with request body of a JSON with id, email, lastName, firstName, areaOfInterest
-### /delete/{id}
-Delete entire resource with path variable of the user id
+- Get all users
+- Get user by id
+- Get user by first and last name
+- Get user by email
+- Create users
+- Update users
+- ### Wishlist
+- Create wishlists
+- Add products to wishlists
+- Delete products from wishlists
+- Delete wishlists
+- ### Orders
+- Create an order and buy multiple products
+- Get all orders from one user
 
-
-## Products
-To test product endpoints, use /products to access the product controller
-### /all
-Get all products, no body or params
-### /name
-Get users with request parameters productName
-### /price
-Get users with request parameter price (double)
-### /save
-Create new product with request body of a JSON with productName, totalProductsInventory, price, image, productDescription, productStatus
-### /update
-Update user based on id with request body of a JSON with id, productName, totalProductsInventory, price, image, productDescription, productStatus
-### /delete/{id}
-Update the product's state to false, doesn't delete resource
+## Product
+- Get all products
+- Get product by id
+- Get products by price
+- Get products by name
+- Create products
+- Update products
