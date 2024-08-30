@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -31,6 +30,8 @@ import com.sebas.shoppingcart.repos.ProductRepository;
 import com.sebas.shoppingcart.repos.UserRepository;
 import com.sebas.shoppingcart.repos.WishlistRepository;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 
 @RestController
@@ -50,13 +51,15 @@ public class UserController {
 		this.orderHistoryRepository = orderHistoryRepository;
 	}
 	
+	@Operation(summary="Get all users")
 	@GetMapping("/users")
 	public List<User> getUsers(){
 		return repository.findAll();
 	}
 	
 	@GetMapping("/users/{id}")
-	public User getUserById(@PathVariable int id){
+	@Operation(summary="Get user by specific ID")
+	public User getUserById(@Parameter(description="User ID") @PathVariable int id){
 		Optional<User> user = repository.findById(id);
 		if(user.isEmpty()) {
 			throw new UserNotFoundException("id:"+id);
@@ -65,7 +68,8 @@ public class UserController {
 	}
 	
 	@GetMapping("/users/email")
-	public User getUserByName(@RequestParam(value="email") String email) {
+	@Operation(summary="Get user by specific email")
+	public User getUserByName(@Parameter(description="User email") @RequestParam(value="email") String email) {
 		Optional<User> userWithEmail = repository.findByEmail(email);
 		if(userWithEmail.isEmpty()) {
 			throw new UserNotFoundException("email: "+email);
@@ -73,9 +77,10 @@ public class UserController {
 		return userWithEmail.get();
 	}
 	
+	@Operation(summary="Get user(s) by first and/or last name")
 	@GetMapping("/users/name")
-	public ResponseEntity<?> getUserByInfo(@RequestParam(value="lastName",required=false) String lastName,
-											@RequestParam(value="firstName",required=false) String firstName) {
+	public ResponseEntity<?> getUserByInfo(@Parameter(description="User last name") @RequestParam(value="lastName",required=false) String lastName,
+											@Parameter(description="USer first name")@RequestParam(value="firstName",required=false) String firstName) {
 		List<User> listFirst = repository.findByFirstName(firstName);
 		List<User> listLast = repository.findByLastName(lastName);
 		if(!listFirst.isEmpty() && !listLast.isEmpty()) {
@@ -92,7 +97,8 @@ public class UserController {
 	}
 	
 	@PostMapping("/users")
-	public ResponseEntity<?> saveUser(@Valid @RequestBody User user) {
+	@Operation(summary="Add user - ID on request body not required")
+	public User saveUser(@Valid @RequestBody User user) {
 		List<User> savedUsers = repository.findAll();
 		for(User u:savedUsers) {
 			if(user.getEmail().contains(u.getEmail())) {
@@ -100,12 +106,12 @@ public class UserController {
 			}
 		}
 		User savedUser = repository.save(user);
-		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUser.getId()).toUri();
-		return ResponseEntity.created(location).build();
+		return savedUser;
 	}
 	
 	@PutMapping("/users")
-	public ResponseEntity<?> updateUser(@Valid @RequestBody UpdateUser user) {
+	@Operation(summary="Update user")
+	public User updateUser(@Valid @RequestBody UpdateUser user) {
 		Optional<User> oldUser = repository.findById(user.getId());
 		if(oldUser.isEmpty()) {
 			throw new UserNotFoundException("Id: "+user.getId() + " not found");
@@ -121,11 +127,12 @@ public class UserController {
 		newUser.setAreaOfInterest(user.getAreaOfInterest());
 		User savedUser = repository.save(newUser);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUser.getId()).toUri();
-		return ResponseEntity.created(location).build();
+		return savedUser;
 	}
 	
+	@Operation(summary="Delete user")
 	@DeleteMapping("/users/{id}")
-	public ResponseEntity<?> deleteUser(@PathVariable("id") int id){
+	public ResponseEntity<?> deleteUser(@Parameter(description="User ID") @PathVariable("id") int id){
 		Optional<User> optUser = repository.findById(id);
 		if(optUser.isEmpty()) {
 			throw new UserNotFoundException("Id:"+id);
@@ -135,7 +142,8 @@ public class UserController {
 	}
 	
 	@GetMapping("/users/{id}/wishlists")
-	public List<Wishlist> retreiveWishlistForUser(@PathVariable int id){
+	@Operation(summary="Get wishlists of a user")
+	public List<Wishlist> retreiveWishlistForUser(@Parameter(description="User ID") @PathVariable int id){
 		Optional<User> user = repository.findById(id);
 		if(user.isEmpty()) {
 			throw new UserNotFoundException("Id:"+id);
@@ -144,7 +152,8 @@ public class UserController {
 	}
 	
 	@PostMapping("/users/{id}/wishlists")
-	public ResponseEntity<Object> createWishlistForUser(@PathVariable int id, @RequestBody Wishlist wishlist){
+	@Operation(summary="Create wishlist for a user - Request body only requires name: {'name':'My Wishlist'}")
+	public Wishlist createWishlistForUser(@Parameter(description="User ID") @PathVariable int id, @RequestBody Wishlist wishlist){
 		Optional<User> user = repository.findById(id);
 		if(user.isEmpty()) {
 			throw new UserNotFoundException("Id:"+id);
@@ -152,11 +161,12 @@ public class UserController {
 		wishlist.setUser(user.get());
 		Wishlist savedWish = wishlistRepository.save(wishlist);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedWish.getId()).toUri();
-		return ResponseEntity.created(location).build();
+		return savedWish;
 	}
 	
 	@PutMapping("users/{id}/wishlists/{wid}")
-	public ResponseEntity<Object> addProductToWishlist(@PathVariable int wid,@RequestParam int pid){
+	@Operation(summary="Add products to wishlist of user")
+	public Wishlist addProductToWishlist(@Parameter(description="User ID")@PathVariable int id,@Parameter(description="Wishlist ID")@PathVariable int wid, @Parameter(description="Product ID")@RequestParam int pid){
 		Optional<Product> product = productRepository.findById(pid);
 		if(product.isEmpty())
 			throw new ProductNotFoundException("Id: " + pid);
@@ -166,11 +176,12 @@ public class UserController {
 		Wishlist foundWish = wishlist.get();
 		foundWish.getProducts().add(product.get());
 		Wishlist savedWish = wishlistRepository.save(foundWish);
-		return ResponseEntity.status(HttpStatus.OK).body(savedWish);
+		return savedWish;
 	}
 	
 	@DeleteMapping("users/{id}/wishlists/{wid}")
-	public ResponseEntity<Object> deleteProductFromWishlist(@PathVariable int wid,@RequestParam int pid){
+	@Operation(summary="Delete product from wishlist of user")
+	public Wishlist deleteProductFromWishlist(@Parameter(description="User ID")@PathVariable int id,@Parameter(description="Wishlist ID")@PathVariable int wid, @Parameter(description="Product ID")@RequestParam int pid){
 		Optional<Product> product = productRepository.findById(pid);
 		if(product.isEmpty())
 			throw new ProductNotFoundException("Id: " + pid);
@@ -182,11 +193,12 @@ public class UserController {
 		.filter(p -> p.getId() != pid)
 		.collect(Collectors.toList()));
 		Wishlist savedWish = wishlistRepository.save(foundWish);
-		return ResponseEntity.status(HttpStatus.OK).body(savedWish);
+		return savedWish;
 	}
 	
 	@DeleteMapping("users/{id}/wishlists")
-	public ResponseEntity<Object> deleteEntireWishlist(@PathVariable int id, @RequestParam int wid){
+	@Operation(summary="Delete entire wishlist from user")
+	public ResponseEntity<Object> deleteEntireWishlist(@Parameter(description="User ID") @PathVariable int id, @Parameter(description="Wishlist ID")@RequestParam int wid){
 		Optional<User> user = repository.findById(id);
 		if(user.isEmpty())
 			throw new UserNotFoundException("Id: "+id);
@@ -198,7 +210,8 @@ public class UserController {
 	}
 	
 	@PostMapping("users/{id}/buy")
-	public ResponseEntity<Object> buyProducts(@PathVariable int id,@RequestBody List<Integer> products){
+	@Operation(summary="Create an order / add to OrderHistory table - Request body is list of product IDs")
+	public OrderHistory buyProducts(@Parameter(description="User ID")@PathVariable int id, @RequestBody List<Integer> products){
 		Optional<User> user = repository.findById(id);
 		OrderHistory orderHistory = new OrderHistory();
 		orderHistory.setUser(user.get());
@@ -219,11 +232,13 @@ public class UserController {
 			productRepository.save(foundProduct.get());
 			orderHistory.getProducts().add(foundProduct.get());
 		}
-		return ResponseEntity.status(HttpStatus.OK).body(orderHistoryRepository.save(orderHistory));
+		OrderHistory savedOrder = orderHistoryRepository.save(orderHistory);
+		return savedOrder;
 	}
 	
 	@GetMapping("/users/{id}/orders")
-	public List<OrderHistory> retreiveOrdersForUser(@PathVariable int id){
+	@Operation(summary="Get all orders from specific user")
+	public List<OrderHistory> retreiveOrdersForUser(@Parameter(description="User ID") @PathVariable int id){
 		Optional<User> user = repository.findById(id);
 		if(user.isEmpty()) {
 			throw new UserNotFoundException("Id:"+id);
